@@ -38,7 +38,7 @@ router.post('/contacts', function(req, res, next) {
       contacts.render(req, res, err.message);
     });
   }
-})
+});
 
 router.get('/menus', function(req, res, next) {
   menus.getMenus().then(results => {
