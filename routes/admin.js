@@ -35,6 +35,7 @@ router.post('/login', function(req, res, next) {
     } else if (!req.body.password) {
         users.render(req, res, "Campo senha obrigatório");
     } else {
+        console.log('LOGIN ROUTE', req.body);
         users.login(req.body.email, req.body.password).then(user => {
             req.session.user = user;
             res.redirect('/admin');

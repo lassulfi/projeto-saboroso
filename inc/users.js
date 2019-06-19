@@ -8,6 +8,7 @@ module.exports = {
         });
     },
     login(email, password) {
+        console.log('LOGIN', email, password);
         return new Promise((resolve, reject) => {
             connection.query('SELECT * FROM tb_users WHERE email = ?', [
                 email
