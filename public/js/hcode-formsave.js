@@ -10,13 +10,10 @@ HTMLFormElement.prototype.save = function() {
             fetch(form.action, {
               method: form.method,
               body: formData
-            }).then(response => {
-              response.json().then(json => {
-                resolve(json);
-              }).catch(err => {
-                  reject(err);
-              });
-            });
+            })
+            .then(response => response.json())
+            .then(json => resolve(json))
+            .catch(err => reject(err))
         });
     });
 }

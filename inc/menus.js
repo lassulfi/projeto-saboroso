@@ -14,13 +14,24 @@ module.exports = {
     save(fields, files) {
         return new Promise((resolve, reject) => {
             fields.photo = `images/${path.parse(files.photo.path).base}`;
+            
+            let query, queryPhoto = "", params = [fields.title, fields.description, fields.price];
 
-            connection.query('INSERT INTO tb_menus (title, description, price, photo) VALUES (?, ?, ?, ?)', [
-                fields.title,
-                fields.description,
-                fields.price,
-                fields.photo
-            ], (err, results) => {
+            if(files.photo.name){
+                queryPhoto = ",photo = ?";
+                params.push(fields.photo);
+            } 
+
+            if(parseInt(fields.id) > 0) {
+                params.push(fields.id);
+
+                query = `UPDATE tb_menus SET title = ?, description = ?, price = ? ${queryPhoto} WHERE id = ?`;
+            } else {
+                if(!files.photo.name) reject("O envio de foto é obrigatório para o cadastro do prato");
+                query = "INSERT INTO tb_menus (title, description, price, photo) VALUES (?, ?, ?, ?)";
+            }
+
+            connection.query(query, params, (err, results) => {
                 if (err) {
                     reject(err);
                 } else {
