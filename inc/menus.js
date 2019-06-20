@@ -39,5 +39,16 @@ module.exports = {
                 }
             });
         });
+    },
+    delete(id) {
+        return new Promise((resolve, reject) => {
+            connection.query("DELETE FROM tb_menus WHERE id = ?", [id], (err, results) => {
+                if(err) {
+                    reject(err);
+                } else {
+                    resolve(results);
+                }
+            });
+        });
     }
 }

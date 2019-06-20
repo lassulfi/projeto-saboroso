@@ -189,4 +189,19 @@ new HCodeFileReader("#modal-update [type=file]", "#modal-update img");
       $('#modal-update').modal('show');
     });
   });
+
+  [...document.querySelectorAll(".btn-delete")].forEach(btn => {
+    btn.addEventListener('click', e => {
+      let tr = e.path.find(el => {
+        return (el.tagName.toUpperCase() === 'TR');
+      });
+      let data = JSON.parse(tr.dataset.row);
+      if(confirm(`Excluir o menu ${data.title}? Essa operação não pode ser revertida.`)){
+        fetch( `/admin/menus/${data.id}`, {
+          method: 'delete'
+        }).then(response => response.json())
+          .then(json => window.location.reload());
+      }
+    });
+  });
 </script>
