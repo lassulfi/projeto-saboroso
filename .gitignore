@@ -3,3 +3,6 @@ node_modules
 
 # bower components
 public/admin/bower_components
+
+#images
+public/images
