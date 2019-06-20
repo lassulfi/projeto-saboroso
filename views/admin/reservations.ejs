@@ -208,57 +208,12 @@
 
 <script src="/js/moment.min.js"></script>
 <script src="/js/hcode-formsave.js"></script>
+<script src="/js/hcode-grid.js"></script>
 <script>
 
-  let formCreate = document.querySelector("#modal-create form");
-  formCreate.save().then(json => {
-    window.location.reload();
-  }).catch(err => {
-    console.error(err);
-  });
-  
-  let formUpdate = document.querySelector('#modal-update form');
-  formUpdate.save().then(json => {
-    window.location.reload();
-  }).catch(err => {
-    console.error(err);
-  });
-
-  [...document.querySelectorAll('.btn-update')].forEach(btn => {
-    btn.addEventListener('click', e => {
-      let tr = e.path.find(el => {
-        return (el.tagName.toUpperCase() === 'TR');
-      });
-      let data = JSON.parse(tr.dataset.row);
-      for(let name in data) {
-        let input = formUpdate.querySelector(`[name=${name}]`);
-        switch (name) {
-          case "date":
-            if (input) input.value = moment(data[name]).format('YYYY-MM-DD')
-            break;
-          default:
-            if(input) input.value = data[name];
-            break;
-        }
-      }
-      $('#modal-update').modal('show');
-    });
-  });
-
-  [...document.querySelectorAll(".btn-delete")].forEach(btn => {
-    btn.addEventListener('click', e => {
-      let tr = e.path.find(el => {
-        return (el.tagName.toUpperCase() === 'TR');
-      });
-      let data = JSON.parse(tr.dataset.row);
-      if(confirm(`Excluir a reserva de ${data.name} no dia ${moment(data.date).format('DD/MM/YYYY')} as ${data.time}? 
-      Essa operação não pode ser revertida.`)){
-        fetch( `/admin/reservations/${data.id}`, {
-          method: 'delete'
-        }).then(response => response.json())
-          .then(json => window.location.reload());
-      }
-    });
+  new HCodeGrid({
+    deleteUrl: "/admin/reservations/${data.id}",
+    deleteMessage: "Excluir a reserva de ${data.name} no dia ${moment(data.date).format('DD/MM/YYYY')} as ${data.time}? Essa operação não pode ser revertida."
   });
 
 </script>
