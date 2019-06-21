@@ -49,7 +49,7 @@ module.exports = {
             params.push(fields.id);
         } else {
             query = `INSERT INTO tb_users (name, email, password) VALUES (?, ?, ?)`;
-            params.push(field.password);
+            params.push(fields.password);
         }
 
         return new Promise((resolve, reject) => {
