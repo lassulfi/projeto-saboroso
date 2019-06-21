@@ -3,6 +3,7 @@ var menus = require('./../inc/menus');
 var reservations = require('./../inc/reservations');
 var reservationsController = require('./../inc/controllers/reservations-controller');
 var contacts = require('./../inc/contacts');
+var emails = require('./../inc/emails');
 var express = require('express');
 var router = express.Router();
 
@@ -39,6 +40,20 @@ router.post('/contacts', function(req, res, next) {
     });
   }
 });
+
+router.post('/subscribe', function(req, res, next) {
+  if(!req.body.email) {
+    res.send({
+      error: "Campo e-mail obrigatório"
+    });
+  } else {
+    emails.save(req.body).then(results => {
+      res.send(results);
+    }). catch(err => {
+      res.send(err);
+    })
+  }
+})
 
 router.get('/menus', function(req, res, next) {
   menus.getMenus().then(results => {
