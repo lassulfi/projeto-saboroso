@@ -72,5 +72,24 @@ module.exports = {
                 }
             });
         });
+    },
+    changePassword(fields) {
+        return new Promise((resolve, reject) => {
+            if (!fields.password) {
+                reject("Preencha a senha.");
+            } else if (fields.password !== fields.passwordConfirm) {
+                reject("Confirmação de senha incorreta.");
+            } else {
+                connection.query(`UPDATE tb_users SET password = ? WHERE id = ?`, 
+                    [fields.password, fields.id], 
+                    (err, results) => {
+                        if (err) {
+                            reject(err.message);
+                        } else {
+                            resolve(results);
+                        }
+                    });
+            }
+        });
     }
 };

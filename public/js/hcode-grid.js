@@ -24,8 +24,8 @@ class HCodeGrid {
         this._options = Object.assign({}, {
             formCreate: "#modal-create form",
             formUpdate: "#modal-update form",
-            btnUpdate: ".btn-update",
-            btnDelete: ".btn-delete",
+            btnUpdate: "btn-update",
+            btnDelete: "btn-delete",
             onUpdateLoad: (form, name, data) => {
                 let input = form.querySelector(`[name=${name}]`); 
 
@@ -33,23 +33,31 @@ class HCodeGrid {
             }
         }, configs);
 
+        this.rows = [...document.querySelectorAll('table tbody tr')];
+
         this.initForms();
         this.initButtons();
     }
 
     initForms() {
         this.formCreate = document.querySelector(this._options.formCreate);
-        this.formCreate.save().then(json => {
-            this.fireEvents('afterFormCreate');
-        }).catch(err => {
-            this.fireEvents('onFormCreateCatchError');
+        this.formCreate.save({
+            success: () => {
+                this.fireEvents('afterFormCreate');
+            },
+            failure: () => {
+                this.fireEvents('onFormCreateCatchError');
+            }
         });
         
         this.formUpdate = document.querySelector(this._options.formUpdate);
-        this.formUpdate.save().then(json => {
-            this.fireEvents('afterFormUpdate');
-        }).catch(err => {
-            this.fireEvents('onFormUpdateCatchError');
+        this.formUpdate.save({
+            success: () => {
+                this.fireEvents('afterFormUpdate');
+            },
+            failure: () => {
+                this.fireEvents('onFormUpdateCatchError');
+            }
         });
     }
 
@@ -66,32 +74,42 @@ class HCodeGrid {
         return JSON.parse(tr.dataset.row);
     }
 
-    initButtons() {
-        [...document.querySelectorAll(this._options.btnUpdate)].forEach(btn => {
-            btn.addEventListener('click', e => {
-                this.fireEvents('beforeUpdateClick', [e]);
+    btnUpdateClick(e) {
+        this.fireEvents('beforeUpdateClick', [e]);
 
-                let data = this.getTrData(e);
-                for(let name in data) {
-                    this._options.onUpdateLoad(this.formUpdate, name, data);
-                }
-               this.fireEvents('afterUpdateClick', [e]);
+        let data = this.getTrData(e);
+        for(let name in data) {
+            this._options.onUpdateLoad(this.formUpdate, name, data);
+        }
+        this.fireEvents('afterUpdateClick', [e]);
+    }
+
+    btnDeleteClick(e) {
+        this.fireEvents('beforeDeleteClick', [e]);
+
+        let data = this.getTrData(e);
+        if(confirm(eval('`' + this._options.deleteMessage + '`'))){
+            fetch(eval('`' + this._options.deleteUrl + '`'), {
+            method: 'delete'
+            }).then(response => response.json())
+            .then(json => {
+                this.fireEvents('afterDeleteClick')
             });
-        });
+        }
+    }
 
-        [...document.querySelectorAll(this._options.btnDelete)].forEach(btn => {
-            btn.addEventListener('click', e => {
-            this.fireEvents('beforeDeleteClick', [e]);
-
-            let data = this.getTrData(e);
-            if(confirm(eval('`' + this._options.deleteMessage + '`'))){
-                fetch(eval('`' + this._options.deleteUrl + '`'), {
-                method: 'delete'
-                }).then(response => response.json())
-                .then(json => {
-                    this.fireEvents('afterDeleteClick')
+    initButtons() {
+        this.rows.forEach(row => {
+            [...row.querySelectorAll('.btn')].forEach(btn => {
+                btn.addEventListener('click', e => {
+                    if(e.target.classList.contains(this._options.btnUpdate)){
+                        this.btnUpdateClick(e);
+                    } else if (e.target.classList.contains(this._options.btnDelete)) {
+                        this.btnDeleteClick(e);
+                    } else {
+                        this.fireEvents('buttonClick', [e.target, this.getTrData(e), e]);
+                    }
                 });
-            }
             });
         });
     }
