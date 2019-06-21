@@ -213,7 +213,18 @@
 
   new HCodeGrid({
     deleteUrl: "/admin/reservations/${data.id}",
-    deleteMessage: "Excluir a reserva de ${data.name} no dia ${moment(data.date).format('DD/MM/YYYY')} as ${data.time}? Essa operação não pode ser revertida."
+    deleteMessage: "Excluir a reserva de ${data.name} no dia ${moment(data.date).format('DD/MM/YYYY')} as ${data.time}? Essa operação não pode ser revertida.",
+    onUpdateLoad: (form, name, data) => {
+      let input = form.querySelector(`[name=${name}]`);
+      switch (name) {
+        case "date":
+          if (input) input.value = moment(data[name]).format('YYYY-MM-DD')
+          break;
+        default:
+          if(input) input.value = data[name];
+          break;
+      }
+    }
   });
 
 </script>
