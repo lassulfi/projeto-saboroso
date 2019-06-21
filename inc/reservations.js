@@ -41,12 +41,28 @@ module.exports = {
             });    
         });
     },
-    getReservations(page) {
-        if(!page) page = 1;
+    getReservations(req) {
+        return new Promise((resolve, reject) => {
+            let page = req.query.page;
+            
+            if(!page) page = 1;
 
-        let pagination = new Pagination(`SELECT SQL_CALC_FOUND_ROWS * FROM tb_reservations ORDER BY date DESC LIMIT ? , ?`);
+            let params = [];
+            let dateStart = req.query.start;
+            let dateEnd = req.query.end;
+            if(dateStart && dateEnd) params.push(dateStart, dateEnd);
 
-        return pagination.getPage(page);
+            let pagination = new Pagination(`SELECT SQL_CALC_FOUND_ROWS * FROM tb_reservations 
+                ${(dateStart && dateEnd) ? 'WHERE date BETWEEN ? AND ?' : ''}
+                ORDER BY date DESC LIMIT ? , ?`, params);
+
+            pagination.getPage(page).then(data => {
+                resolve({
+                    data,
+                    links: pagination.getNavigation(req.query)
+                });
+            });
+        });
     },
     delete(id) {
         return new Promise((resolve, reject) => {
