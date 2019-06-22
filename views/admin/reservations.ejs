@@ -233,9 +233,9 @@
   let chart = new Chart(document.querySelector("#chart").getContext("2d"), {
     type: 'bar',
     data: {
-      labels: ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"],
+      labels: [],
       datasets: [{
-        data: [3, 5, 6, 1, 4, 7, 9, 0, 10, 12, 16, 25],
+        data: [],
         label: 'Reservas',
         backgroundColor: 'rgb(54, 162, 235)',
         borderColor: 'rgb(54, 162, 235)',
@@ -266,5 +266,22 @@
       }
     }
   });
+
+  fetch(`/admin/reservations/chart${window.location.search}`)
+    .then(response => response.json()).
+    then(json => {
+      chart.data = {
+        labels: json.months,
+        datasets: [{
+          data: json.values,
+          label: 'Reservas',
+          backgroundColor: 'rgb(54, 162, 235)',
+          borderColor: 'rgb(54, 162, 235)',
+          fill: false,
+          pointBackgroundColor: '#FFF'
+        }]
+      };
+      chart.update();
+    });
 
 </script>
