@@ -10,19 +10,21 @@ var path = require('path');
 var http = require('http');
 var socket = require('socket.io');
 
-var indexRouter = require('./routes/index');
-var adminRouter = require('./routes/admin');
-
 var app = express();
 
 var http = http.Server(app);
 
 var io = socket(http);
 io.on('connection', function(socket) {
-  console.log('Novo usuario conectado');
+
 });
 
+var indexRouter = require('./routes/index')(io);
+var adminRouter = require('./routes/admin')(io);
+
 app.use(function(req, res, next) {
+  req.body = {};
+  
   if(req.method === 'POST'){
     var form = formidable.IncomingForm({
       uploadDir: path.join(__dirname, "/public/images"),
